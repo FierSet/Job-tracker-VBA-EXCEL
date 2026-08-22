@@ -22,57 +22,83 @@ Sub start()
     Set inputRange = Range("A3:G3")
     insert_dropdown Range("F3")
     insert_dropdown Range("F11:F" & Rows.Count)
+    
     Call moveshape("GetJob", Cells(10, "H").top + 2, Cells(10, "H").left + 2)
     inputRange.Value = Null
 End Sub
 
-Private Sub Worksheet_Change(ByVal Target As Range)
-    If Not Intersect(Target, Me.Range("F11:F" & Me.Rows.Count)) Is Nothing Or Not Intersect(Target, Me.Range("F3")) Is Nothing Then
+Private Sub Worksheet_Change(ByVal target As Range)
+    If Not Intersect(target, Me.Range("F11:F" & Me.Rows.Count)) Is Nothing Or Not Intersect(target, Me.Range("F3")) Is Nothing Then
         'Ignore if the user cleared multiple cells at once to prevent errors
-        If Target.Cells.Count > 1 Then Exit Sub
+        If target.Cells.Count > 1 Then Exit Sub
         
         Dim formattedDate As String
         formattedDate = Format(Date, "dd/mm/yyyy")
         
         For Each cell In DropdownStatus
-            If cell.Value = Target.Value Then
-                Target.Interior.Color = cell.Interior.Color
-                Cells(Target.Row, Target.Column - 2).Value = formattedDate
+            If cell.Value = target.Value Then
+                target.Interior.Color = cell.Interior.Color
+                Cells(target.Row, target.Column - 2).Value = formattedDate
                 Exit For
             Else
-                If Target.Column = 6 And Target.Row = 3 Then
-                    Target.Interior.Color = RGB(255, 255, 255)
+                If target.Column = 6 And target.Row = 3 Then
+                    target.Interior.Color = RGB(255, 255, 255)
                 Else
-                    Target.Interior.Color = Cells(1, 1).Interior.Color
+                    target.Interior.Color = Cells(1, 1).Interior.Color
                 End If
             End If
         Next cell
-
+        
+        If Not Intersect(target, Me.Range("F11:F" & Me.Rows.Count)) Is Nothing Then
+            If Cells(target.Row, "F").Value = "Reject" Or Cells(target.Row, "F").Value = "Not Receive Updarted" Then
+                Move_To_End target
+            Else
+                Move_To_Top Range(Cells(target.Row, "A"), Cells(target.Row, "G"))
+            End If
+        End If
         
     End If
 End Sub
 
-Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+Private Sub Worksheet_SelectionChange(ByVal target As Range)
     Dim myShape As Shape
     Dim lastRow As Long
     lastRow = Cells(Rows.Count, "A").End(xlUp).Row
-    If Target.Cells.Count > 1 Then Exit Sub
+    If target.Cells.Count > 1 Then Exit Sub
      
-    If Not Intersect(Target, Me.Range("A11:G" & lastRow)) Is Nothing Then
-        
-        On Error Resume Next ' Prevents a crash if the shape name is wrong
-        Set myShape = Me.Shapes("GetJob")
-        On Error GoTo 0
-        
-         If Not myShape Is Nothing Then
-            targetRow = Target.Row
-            
-            myShape.top = Me.Cells(targetRow, "H").top
-            
-            ' Lock the horizontal position to Column H
-            myShape.left = Me.Cells(targetRow, "H").left
-        End If
-        
+    If Not Intersect(target, Me.Range("A11:G" & lastRow)) Is Nothing Then
+        targetRow = target.Row
+        Call moveshape("GetJob", Me.Cells(targetRow, "H").top, Me.Cells(targetRow, "H").left)
+    End If
+    
+End Sub
+
+Sub Move_To_End(target As Variant)
+    Dim lastRow As Long
+    Call moveshape("GetJob", Cells(9, "H").top + 2, Cells(9, "H").left + 2)
+    lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+    Set targetDest = Cells(lastRow + 1, "A")
+    Range(Cells(target.Row, "A"), Cells(target.Row, "G")).Copy Destination:=targetDest
+    
+    If target.Row = 3 Then
+        Cells(target.Row, "G").Value = Null
+    Else
+        Cells(target.Row, "G").EntireRow.Delete
+    End If
+    
+End Sub
+
+Sub Move_To_Top(target As Range)
+    Dim storegetable As String
+    storegetable = "A11"
+    Call moveshape("GetJob", Cells(9, "H").top + 2, Cells(9, "H").left + 2)
+    Range(storegetable).EntireRow.insert Shift:=xlDown
+    target.Copy Destination:=Range(storegetable)
+    
+    If target.Row = 3 Then
+        Cells(target.Row, "G").Value = Null
+    Else
+        Cells(target.Row, "G").EntireRow.Delete
     End If
     
 End Sub
@@ -105,8 +131,6 @@ End Sub
 
 Sub SaveJob()
     Dim is_regete As Boolean
-    Dim lastRow As Long
-    Dim storegetable As String
     is_regete = False
     
     For Each cell In inputRange
@@ -115,21 +139,16 @@ Sub SaveJob()
             Exit Sub ' Stops checking once it finds the first empty cell
         End If
         
-        If cell.Value = "Reject" Then
+        If cell.Value = "Reject" Or cell.Value = "Not Receive Updarted" Then
             is_regete = True
         End If
         
     Next cell
     
-    storegetable = "A11"
-    lastRow = Cells(Rows.Count, "A").End(xlUp).Row
-    
     If is_regete Then
-        Set targetDest = Cells(lastRow + 1, "A")
-        inputRange.Copy Destination:=targetDest
+         Move_To_End inputRange
     Else
-        Range(storegetable).EntireRow.insert Shift:=xlDown
-        inputRange.Copy Destination:=Range(storegetable)
+        Move_To_Top inputRange
     End If
 
     inputRange.Value = Null
