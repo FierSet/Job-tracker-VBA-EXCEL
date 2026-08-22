@@ -5,15 +5,25 @@ An Excel-based Job Application Tracker developed with VBA macros to organize and
 I built this project in one day during my free time as a practical way to track my applications and automate repetitive tasks.
 
 🚀 Features
+
 📋 Track job applications
+
 🏢 Manage companies and positions
+
 🔄 Track recruitment stages
+
 📅 Record interviews and follow-up dates
+
 💰 Track salary expectations
+
 📊 Monitor application statistics
+
 ⚙️ VBA macros for automation
+
 🖥️ Excel-based interface
+
 🛠️ Technologies
+
 Microsoft Excel
 VBA (Visual Basic for Applications)
 
