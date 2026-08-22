@@ -21,7 +21,7 @@ VBA (Visual Basic for Applications)
 Excel-VBA-Job-Application-Tracker/
 │
 ├── Excel/
-│   └── Job_Application_Tracker.xlsx
+│   └── JobTracker_single.xlsx
 │
 ├── VBA/
 │   └── ThisWorkbook.cls
