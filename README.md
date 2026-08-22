@@ -1,6 +1,6 @@
 📊 Excel VBA Job Application Tracker
 
-[Job Application Tracker]([images/tracker-preview.png](https://raw.githubusercontent.com/FierSet/Job-tracker-VBA-EXCEL/refs/heads/main/f14c9a64-0ef7-4798-b021-a1444df5fcff.png)
+![Job Application Tracker]([images/tracker-preview.png](https://raw.githubusercontent.com/FierSet/Job-tracker-VBA-EXCEL/refs/heads/main/f14c9a64-0ef7-4798-b021-a1444df5fcff.png)
 
 An Excel-based Job Application Tracker developed with VBA macros to organize and manage the job search process.
 
