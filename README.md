@@ -29,15 +29,25 @@ VBA (Visual Basic for Applications)
 
 📁 Repository Structure
 Excel-VBA-Job-Application-Tracker/
+
 │
+
 ├── Excel/
+
 │   └── JobTracker_single.xlsx
+
 │
+
 ├── VBA/
+
 │   └── ThisWorkbook.cls
+
 │   └── Sheet1.cls
+
 │
+
 └── README.md
+
 🔐 Why are the VBA macros separate?
 
 The Excel file and VBA source code are provided separately.
