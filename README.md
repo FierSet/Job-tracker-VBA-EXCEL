@@ -16,6 +16,7 @@ I built this project in one day during my free time as a practical way to track 
 🛠️ Technologies
 Microsoft Excel
 VBA (Visual Basic for Applications)
+
 📁 Repository Structure
 Excel-VBA-Job-Application-Tracker/
 │
@@ -23,7 +24,8 @@ Excel-VBA-Job-Application-Tracker/
 │   └── Job_Application_Tracker.xlsx
 │
 ├── VBA/
-│   └── Job_Application_Tracker.bas
+│   └── ThisWorkbook.cls
+│   └── Sheet1.cls
 │
 └── README.md
 🔐 Why are the VBA macros separate?
