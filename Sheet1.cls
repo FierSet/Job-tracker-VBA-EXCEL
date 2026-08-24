@@ -26,6 +26,7 @@ Sub start()
     insert_dropdown Range("F11:F" & Rows.Count)
     
     Call moveshape("GetJob", Cells(9, "I").top + 2, Cells(9, "I").left + 2)
+    Call moveshape("Deletejob", Cells(9, "J").top + 2, Cells(9, "J").left + 2)
     inputRange.Value = Null
 End Sub
 
@@ -72,6 +73,7 @@ Private Sub Worksheet_SelectionChange(ByVal target As Range)
     If Not Intersect(target, Me.Range("A11:H" & lastRow)) Is Nothing Then
         targetRow = target.Row
         Call moveshape("GetJob", Me.Cells(targetRow, "I").top, Me.Cells(targetRow, "I").left)
+        Call moveshape("Deletejob", Me.Cells(targetRow, "J").top, Me.Cells(targetRow, "J").left)
     End If
     
 End Sub
@@ -79,6 +81,7 @@ End Sub
 Sub Move_To_End(target As Variant)
     Dim lastRow As Long
     Call moveshape("GetJob", Cells(9, "I").top + 2, Cells(9, "I").left + 2)
+    Call moveshape("Deletejob", Cells(9, "J").top + 2, Cells(9, "J").left + 2)
     lastRow = Cells(Rows.Count, "A").End(xlUp).Row
     Set targetDest = Cells(lastRow + 1, "A")
     Range(Cells(target.Row, "A"), Cells(target.Row, "H")).Copy Destination:=targetDest
@@ -95,6 +98,7 @@ Sub Move_To_Top(target As Range)
     Dim storegetable As String
     storegetable = "A11"
     Call moveshape("GetJob", Cells(9, "I").top + 2, Cells(9, "I").left + 2)
+    Call moveshape("Deletejob", Cells(9, "J").top + 2, Cells(9, "J").left + 2)
     Range(storegetable).EntireRow.insert Shift:=xlDown
     target.Copy Destination:=Range(storegetable)
     
@@ -160,16 +164,44 @@ Sub SaveJob()
     inputRange.Interior.Color = RGB(255, 255, 255)
 End Sub
 
+Sub Delet_job()
+    Dim currentRow As Range
+    Dim lastRow As Long
+    Dim userResponse As VbMsgBoxResult
+    
+    lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+    Set currentRow = Cells(ActiveCell.Row, ActiveCell.Column)
+    
+    If Not Intersect(currentRow, Range("A11:H" & lastRow)) Is Nothing Then
+    
+        userResponse = MsgBox("Do you want to Delete the Job:" & _
+        vbCrLf & Cells(currentRow.Row, "B") & " of " & Cells(currentRow.Row, "A") & "?", vbYesNo + vbQuestion, "Confirmation Required")
+        
+        If userResponse = vbNo Then
+            Exit Sub
+        End If
+    
+        Call moveshape("GetJob", Cells(9, "I").top + 2, Cells(9, "I").left + 2)
+        Call moveshape("Deletejob", Cells(9, "J").top + 2, Cells(9, "J").left + 2)
+        Rows(currentRow.Row).EntireRow.Delete
+        
+        MsgBox "Job deleted!", vbExclamation
+    Else
+        MsgBox "Please Select a Job!", vbExclamation
+    End If
+End Sub
+
 Sub getjob()
     Dim currentRow As Range
     Dim lastRow As Long
+    
     lastRow = Cells(Rows.Count, "A").End(xlUp).Row
     Set currentRow = Cells(ActiveCell.Row, ActiveCell.Column)
     
     If Not Intersect(currentRow, Range("A11:G" & lastRow)) Is Nothing Then
     
         Call moveshape("GetJob", Cells(9, "I").top + 2, Cells(9, "I").left + 2)
-        
+        Call moveshape("Deletejob", Cells(9, "J").top + 2, Cells(9, "J").left + 2)
         Range(Cells(currentRow.Row, "A"), Cells(currentRow.Row, "G")).Copy Destination:=Range("A3")
         Rows(currentRow.Row).EntireRow.Delete
     Else
