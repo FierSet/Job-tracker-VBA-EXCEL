@@ -9,12 +9,14 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = True
 Public inputRange As Range
 Public table_header As Range
+Public table_analytisis As Range
 Public DropdownStatus As Range
 
 
 Sub start()
     Set DropdownStatus = Worksheets("Settings").Range("A2:A7")
     Set table_header = Worksheets("Settings").Range("A11:G11")
+    Set table_analytisis = Worksheets("Settings").Range("A15:F32")
     
     table_header.Copy Destination:=Range("A2")
     table_header.Copy Destination:=Range("A10")
@@ -23,7 +25,7 @@ Sub start()
     insert_dropdown Range("F3")
     insert_dropdown Range("F11:F" & Rows.Count)
     
-    Call moveshape("GetJob", Cells(10, "H").top + 2, Cells(10, "H").left + 2)
+    Call moveshape("GetJob", Cells(9, "I").top + 2, Cells(9, "I").left + 2)
     inputRange.Value = Null
 End Sub
 
@@ -38,7 +40,8 @@ Private Sub Worksheet_Change(ByVal target As Range)
         For Each cell In DropdownStatus
             If cell.Value = target.Value Then
                 target.Interior.Color = cell.Interior.Color
-                Cells(target.Row, target.Column - 2).Value = formattedDate
+                Cells(target.Row, "D").Value = formattedDate
+                analytics target
                 Exit For
             Else
                 If target.Column = 6 And target.Row = 3 Then
@@ -53,7 +56,7 @@ Private Sub Worksheet_Change(ByVal target As Range)
             If Cells(target.Row, "F").Value = "Reject" Or Cells(target.Row, "F").Value = "Not Receive Updarted" Then
                 Move_To_End target
             Else
-                Move_To_Top Range(Cells(target.Row, "A"), Cells(target.Row, "G"))
+                Move_To_Top Range(Cells(target.Row, "A"), Cells(target.Row, "H"))
             End If
         End If
         
@@ -66,24 +69,24 @@ Private Sub Worksheet_SelectionChange(ByVal target As Range)
     lastRow = Cells(Rows.Count, "A").End(xlUp).Row
     If target.Cells.Count > 1 Then Exit Sub
      
-    If Not Intersect(target, Me.Range("A11:G" & lastRow)) Is Nothing Then
+    If Not Intersect(target, Me.Range("A11:H" & lastRow)) Is Nothing Then
         targetRow = target.Row
-        Call moveshape("GetJob", Me.Cells(targetRow, "H").top, Me.Cells(targetRow, "H").left)
+        Call moveshape("GetJob", Me.Cells(targetRow, "I").top, Me.Cells(targetRow, "I").left)
     End If
     
 End Sub
 
 Sub Move_To_End(target As Variant)
     Dim lastRow As Long
-    Call moveshape("GetJob", Cells(9, "H").top + 2, Cells(9, "H").left + 2)
+    Call moveshape("GetJob", Cells(9, "I").top + 2, Cells(9, "I").left + 2)
     lastRow = Cells(Rows.Count, "A").End(xlUp).Row
     Set targetDest = Cells(lastRow + 1, "A")
-    Range(Cells(target.Row, "A"), Cells(target.Row, "G")).Copy Destination:=targetDest
-    
+    Range(Cells(target.Row, "A"), Cells(target.Row, "H")).Copy Destination:=targetDest
+    analytics Range("F" & targetDest.Row)
     If target.Row = 3 Then
         Cells(target.Row, "G").Value = Null
     Else
-        Cells(target.Row, "G").EntireRow.Delete
+        Cells(target.Row, "H").EntireRow.Delete
     End If
     
 End Sub
@@ -91,14 +94,16 @@ End Sub
 Sub Move_To_Top(target As Range)
     Dim storegetable As String
     storegetable = "A11"
-    Call moveshape("GetJob", Cells(9, "H").top + 2, Cells(9, "H").left + 2)
+    Call moveshape("GetJob", Cells(9, "I").top + 2, Cells(9, "I").left + 2)
     Range(storegetable).EntireRow.insert Shift:=xlDown
     target.Copy Destination:=Range(storegetable)
+    
+    analytics Range("F11")
     
     If target.Row = 3 Then
         Cells(target.Row, "G").Value = Null
     Else
-        Cells(target.Row, "G").EntireRow.Delete
+        Cells(target.Row, "H").EntireRow.Delete
     End If
     
 End Sub
@@ -163,12 +168,51 @@ Sub getjob()
     
     If Not Intersect(currentRow, Range("A11:G" & lastRow)) Is Nothing Then
     
-        Call moveshape("GetJob", Cells(9, "H").top + 2, Cells(9, "H").left + 2)
+        Call moveshape("GetJob", Cells(9, "I").top + 2, Cells(9, "I").left + 2)
         
         Range(Cells(currentRow.Row, "A"), Cells(currentRow.Row, "G")).Copy Destination:=Range("A3")
         Rows(currentRow.Row).EntireRow.Delete
     Else
         MsgBox "Please Select a Job!", vbExclamation
     End If
+    
+End Sub
+
+Sub analytics(target As Range)
+    Dim formattedDate As String
+    formattedDate = Format(Date, "dd/mm/yyyy")
+        
+    For Each cell In table_analytisis.Columns(1).Cells
+        If target.Value = cell.Value Then
+            If IsEmpty(table_analytisis.Cells(cell.Row, "C").Value) And IsEmpty(table_analytisis.Cells(cell.Row, "E").Value) Then
+                Cells(target.Row, "H").Interior.Color = cell.Offset(0, 5).Interior.Color
+                Cells(target.Row, "H").Value = cell.Offset(0, 5).Value
+                Exit For
+            ElseIf Not IsEmpty(table_analytisis.Cells(cell.Row, "C").Value) And IsEmpty(table_analytisis.Cells(cell.Row, "E").Value) Then
+                If formattedDate - Cells(target.Row, "D").Value > table_analytisis.Cells(Cells.Row, "C").Value Then
+                    Cells(target.Row, "H").Interior.Color = cell.Offset(0, 5).Interior.Color
+                    Cells(target.Row, "H").Value = cell.Offset(0, 5).Value
+                    Exit For
+                End If
+            ElseIf Not IsEmpty(table_analytisis.Cells(cell.Row, "C").Value) And Not IsEmpty(table_analytisis.Cells(cell.Row, "E").Value) Then
+                If formattedDate - Cells(target.Row, "D").Value > table_analytisis.Cells(Cells.Row, "C").Value And formattedDate - Cells(target.Row, "D").Value < table_analytisis.Cells(Cells.Row, "E").Value Then
+                    Cells(target.Row, "H").Interior.Color = cell.Offset(0, 5).Interior.Color
+                    Cells(target.Row, "H").Value = cell.Offset(0, 5).Value
+                    Exit For
+                End If
+            End If
+            
+        End If
+    Next cell
+    
+End Sub
+
+Sub massive_analysis()
+    Dim lastRow As Long
+    lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+    
+    For Each cell In Range("A11:A" & lastRow)
+        analytics Range("F" & cell.Row)
+    Next cell
     
 End Sub
