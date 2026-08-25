@@ -212,26 +212,40 @@ End Sub
 
 Sub analytics(target As Range)
     Dim formattedDate As String
+    Dim daysBetween As Long
     formattedDate = Format(Date, "dd/mm/yyyy")
         
     For Each cell In table_analytisis.Columns(1).Cells
+    
         If target.Value = cell.Value Then
-            If IsEmpty(table_analytisis.Cells(cell.Row, "C").Value) And IsEmpty(table_analytisis.Cells(cell.Row, "E").Value) Then
+            If IsEmpty(cell.Offset(0, 2).Value) And IsEmpty(cell.Offset(0, 2).Value) Then
                 Cells(target.Row, "H").Interior.Color = cell.Offset(0, 5).Interior.Color
                 Cells(target.Row, "H").Value = cell.Offset(0, 5).Value
                 Exit For
-            ElseIf Not IsEmpty(table_analytisis.Cells(cell.Row, "C").Value) And IsEmpty(table_analytisis.Cells(cell.Row, "E").Value) Then
-                If formattedDate - Cells(target.Row, "D").Value > table_analytisis.Cells(Cells.Row, "C").Value Then
+            ElseIf Not IsEmpty(cell.Offset(0, 2).Value) And IsEmpty(cell.Offset(0, 4).Value) Then
+                
+                daysBetween = Date - CDate(Cells(target.Row, "D").Value)
+            
+                If daysBetween > cell.Offset(0, 2).Value Then
+                
                     Cells(target.Row, "H").Interior.Color = cell.Offset(0, 5).Interior.Color
                     Cells(target.Row, "H").Value = cell.Offset(0, 5).Value
                     Exit For
+                    
                 End If
-            ElseIf Not IsEmpty(table_analytisis.Cells(cell.Row, "C").Value) And Not IsEmpty(table_analytisis.Cells(cell.Row, "E").Value) Then
-                If formattedDate - Cells(target.Row, "D").Value > table_analytisis.Cells(Cells.Row, "C").Value And formattedDate - Cells(target.Row, "D").Value < table_analytisis.Cells(Cells.Row, "E").Value Then
+                
+            ElseIf Not IsEmpty(cell.Offset(0, 2).Value) And Not IsEmpty(cell.Offset(0, 4).Value) Then
+                daysBetween = Date - CDate(Cells(target.Row, "D").Value)
+                
+                If daysBetween > cell.Offset(0, 2).Value And _
+                   daysBetween < cell.Offset(0, 4).Value Then
+                    
                     Cells(target.Row, "H").Interior.Color = cell.Offset(0, 5).Interior.Color
                     Cells(target.Row, "H").Value = cell.Offset(0, 5).Value
                     Exit For
+                    
                 End If
+                
             End If
             
         End If
