@@ -27,6 +27,7 @@ Sub start()
     
     Call moveshape("GetJob", Cells(9, "I").top + 2, Cells(9, "I").left + 2)
     Call moveshape("Deletejob", Cells(9, "J").top + 2, Cells(9, "J").left + 2)
+    massive_analysis
     inputRange.Value = Null
 End Sub
 
